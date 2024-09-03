@@ -14,23 +14,23 @@ router = APIRouter()
 @router.post("/", response_model=User, status_code=status.HTTP_201_CREATED)
 async def create_user(
     db: Annotated[AsyncSession, Depends(get_db)],
-    product_in: UserCreate
+    user_data: UserCreate
 ):
     # Use the CRUD (Create, Read, Update, Delete) operations from the 'crud' module
     # to create a new product or return an existing one if it already exists
-    product, created = await user_crud.product.get_or_create(
-        db=db, defaults=product_in.dict()
+    user, created = await user_crud.get_or_create(
+        db=db, defaults=user_data.model_dump()
     )
     
     # If the product already exists, raise an HTTPException with a 400 status code
     if not created:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Product exists"
+            detail="User already exists"
         )
     
     # Return the created or existing product
-    return product
+    return user
 
 # # Define a route to create a new product
 # @router.post("/", response_model=Product, status_code=status.HTTP_201_CREATED)
